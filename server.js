@@ -36,10 +36,18 @@ app.get("/timestamp",(req,res)=>{
   if (req.query.time == undefined){
     res.sendFile(__dirname + '/views/timestamp.html');
   }
-  else {const timestamp = setTime(req.query.time)
-    res.send(timestamp)
-      }
+  else {
+    res.send(setTime(req.query.time))
+  }
 })
+app.get("/parser",(req,res)=>{
+
+  console.log(res.header())
+  res.write('<title>parser</title>')
+  res.end('<code>'+JSON.stringify(parser(req,res))+'</code>')
+  console.log(req)
+})
+
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
   console.log('Your app is listening on port: ' + listener.address().port);
@@ -54,4 +62,9 @@ function setTime(time){
     var unix = new Date(time).getTime()/1000
   }
   return {unix:unix,natural:natural}
+}
+function parser(req,res) {
+  var user = req.get('user-agent')
+  var software = user.match(/\(([^)]+)\)/)
+  return {ip:req.ip,language:req.get('Accept-Language').split(',')[0],software:software[1]}
 }

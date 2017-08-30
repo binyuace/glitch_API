@@ -10,8 +10,10 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "body-parser": "^1.17.2",
     "express": "^4.15.3",
-    "moment": "^2.18.1"
+    "moment": "^2.18.1",
+    "mongodb": "^2.2.31"
   },
   "engines": {
     "node": "8.x"

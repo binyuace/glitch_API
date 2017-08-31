@@ -18,7 +18,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 // app.use(bodyParser.json())
 // http://expressjs.com/en/starter/basic-routing.html
 app.get("/", function (request, response) {
-  log(request.body)
   response.sendFile(__dirname + '/views/index.html');
 });
 
@@ -27,7 +26,6 @@ app.get("/dreams", function (request, response) {
 });
 // could also use the POST body instead of query string: http://expressjs.com/en/api.html#req.body
 app.post("/dreams", function (request, response) {
-  log(request.body)
   dreams.push(request.query.dream); 
   response.sendStatus(200);
 });
@@ -39,7 +37,6 @@ app.get("/timestamp",(req,res)=>{
     res.sendFile(__dirname + '/views/timestamp.html');
   }
   else {
-    log(req.body)
     res.send(setTime(req.query.time))
   }
 })
@@ -49,26 +46,51 @@ app.get("/parser",(req,res)=>{
 })
 // shorten url API
 var url = require('./db').url
-app.get("/short",(req,res)=>{
-  
-}) 
+var urlCount = 0
+log('connecting to database')
 MongoClient.connect(url, function(err, db) {
   if (err) console.error(err)
   else {
-    // log(db)
-
-    var test = db.collection('test')
+    log('Connected to database')
+    let short = db.collection('shortenUrl')
      // Insert a bunch of documents for the testing
     // test.insertMany([], {w:1}, function(err, result) {
     //   if (err) console.error(err)
-
+    app.get("/short/:url",(req,res)=>{
+      short.findOne({shortUrl:'https://amazingbin.glitch.me/short/'+req.params.url},(err,result)=>{
+        log('Get'+req.params.url)
+        if (err){
+          console.error(err)
+          res.send('404 not found')
+        }
+        res.redirect(result.url)
+      })
+    })
+    app.post("/short",(req,res)=>{
+        const url = req.body.url
+        log(req.body)
+        short.find({}).toArray((err,result)=>{
+          urlCount = result.length 
+          const toInsert = require('./convert')(url,urlCount)
+          if (toInsert.url === null) {
+            res.send('url not valid')
+          } else {
+              res.send(toInsert)
+              short.insertOne(toInsert,(err,result)=>{
+                  if (err) console.error(err)
+                  else {
+                    log(result)
+                    log('successfully inserted')
+                  }
+               })
+          }
+        })
+        
+    })
+    
     // Perform a simple find and return all the documents
-      test.find({a:1}).toArray(function(err, docs) {
-        log( docs); 
- 
-        db.close();  
-      });
-     // })
+//       test.find({a:1}).toArray(function(err, docs) {
+//         log(docs); 
   }
 })
  

@@ -1,23 +1,25 @@
-Welcome to the Glitch BETA
+Welcome to Amazing Bin API Collection
 =========================
+timestamp
+--------
+[https://amazingbin.glitch.me/timestamp](https://amazingbin.glitch.me/timestamp)
 
-Click `Show` in the header to see your app live. Updates to your code will instantly deploy and update live.
+parser
+-------
+[https://amazingbin.glitch.me/parser](https://amazingbin.glitch.me/parser)
 
-**Glitch** is the friendly commmunity where you'll build the app of your dreams. Glitch lets you instantly create, remix, edit, and host an app, bot or site, and you can invite collaborators or helpers to simultaneously edit code with you.
+shortenUrl
+----------
+[https://amazingbin.glitch.me/shorturl](https://amazingbin.glitch.me/shorturl)
+
+imgsearch
+---------
+[https://amazingbin.glitch.me/search](https://amazingbin.glitch.me/search)
+
 
 Find out more [about Glitch](https://glitch.com/about).
 
 
-Your Project
-------------
-
-On the front-end,
-- edit `public/client.js`, `public/style.css` and `views/index.html`
-- drag in `assets`, like images or music, to add them to your project
-
-On the back-end,
-- your app starts at `server.js`
-- add frameworks and packages in `package.json`
 - safely store app secrets in `.env` (nobody can see this but you and people you invite)
 
 

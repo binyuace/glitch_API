@@ -15,7 +15,7 @@ app.use(express.static('public'));
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))
 // parse application/json
-// app.use(bodyParser.json())
+app.use(bodyParser.json())
 // http://expressjs.com/en/starter/basic-routing.html
 app.get("/", function (request, response) {
   response.sendFile(__dirname + '/views/index.html');
@@ -44,6 +44,10 @@ app.get("/timestamp",(req,res)=>{
 app.get("/parser",(req,res)=>{
   res.send(parser(req,res))
 })
+app.get("/shorturl",(req,res)=>{
+  res.sendFile(__dirname + '/views/short.html')
+})
+  
 // shorten url API
 var url = require('./db').url
 var urlCount = 0
@@ -87,13 +91,26 @@ MongoClient.connect(url, function(err, db) {
         })
         
     })
-    
-    // Perform a simple find and return all the documents
-//       test.find({a:1}).toArray(function(err, docs) {
-//         log(docs); 
   }
-})
+  // image search API
+  app.get("/search",(req,res)=>{
+    var q = req.query.q
+    if (q === undefined) {
+      res.send(__dirname+'/views/im')
+    } else {
  
+      
+      
+      
+      
+    }
+//   end of GET search
+  })
+  
+  
+//   end of database connection
+})
+
 
 
  

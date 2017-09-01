@@ -1,5 +1,7 @@
 // server.js
 // where your node app starts
+require('es6-promise').polyfill();
+require('isomorphic-fetch');
 var log = console.log.bind(console)
 // init project
 var express = require('express');
@@ -7,6 +9,15 @@ var app = express();
 var moment = require('moment')
 var MongoClient = require('mongodb').MongoClient;
 var bodyParser = require('body-parser')
+
+var Unsplash = require('unsplash-js').default;
+var toJson = require('unsplash-js').toJson
+
+const unsplash = new Unsplash({
+  applicationId: "852842363511fc7d26839c600217bc1ca18cd2fa30af382631414c56ade47abb",
+  secret: "be47b1024adf5b948438aa185146994ede0809800fb43bf8ec517b12aba67e58",
+  callbackUrl: "urn:ietf:wg:oauth:2.0:oob"
+});
 // we've started you off with Express, 
 // but feel free to use whatever libs or frameworks you'd like through `package.json`.
    
@@ -57,6 +68,7 @@ MongoClient.connect(url, function(err, db) {
   else {
     log('Connected to database')
     let short = db.collection('shortenUrl')
+    let search = db.collection('search')
      // Insert a bunch of documents for the testing
     // test.insertMany([], {w:1}, function(err, result) {
     //   if (err) console.error(err)
@@ -91,22 +103,43 @@ MongoClient.connect(url, function(err, db) {
         })
         
     })
-  }
-  // image search API
-  app.get("/search",(req,res)=>{
-    var q = req.query.q
-    if (q === undefined) {
-      res.send(__dirname+'/views/im')
-    } else {
- 
-      
-      
-      
-      
-    }
-//   end of GET search
+
+    // image search API
+    app.get("/search",(req,res)=>{
+      var q = req.query.q
+      var offset = req.query.offset?req.query.offset:10
+      if (q === undefined) {
+        res.sendFile(__dirname+'/views/imgsearch.html')
+      } else { 
+        log('searching '+q)
+
+         unsplash.search.photos(q,1,offset) 
+           .then(toJson)
+            .then(json => {
+                log('get '+json.results.length+' photos')
+                  log('searching')
+                 // res.json(json)
+                 res.json(formatImage(json.results))
+            });
+        var time = new Date()
+        search.insertOne({time:time,query:q},(err,result)=>{
+          if (err) console.error(err)
+          else log(result.ops)
+        })
+
+      }
+//   end of GET search      
   })
-  
+    app.get("/latest",(req,res)=>{
+      log('latest search')
+      search.find({}).toArray((err,result)=>{
+        if (err) console.error(err)
+        log(result)
+        result.sort((pre,cur)=>cur.time-pre.time)
+        res.send(result.slice(0,10))
+      })
+  })
+  }
   
 //   end of database connection
 })
@@ -145,4 +178,10 @@ function parser(req,res) {
   let software = user.match(/\(([^)]+)\)/)?user.match(/\(([^)]+)\)/)[1]:undefined;
   let language = (req.get('Accept-Language'))?req.get('Accept-Language').split(',')[0]:undefined;
   return {ip:ip,language:language,software:software}
+}
+function formatImage(result){
+  return result.map((arr)=>{
+    return {raw:arr.urls.raw,
+    link:arr.links.html}
+  })
 }

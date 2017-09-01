@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "body-parser": "^1.17.2",
+    "es6-promise": "^4.1.1",
     "express": "^4.15.3",
+    "isomorphic-fetch": "^2.2.1",
     "moment": "^2.18.1",
     "mongodb": "^2.2.31",
-    "unsplash-js": "^4.6.0"
+    "unsplash-js": "^4.6.0",
+    "whatwg-fetch": "^2.0.3"
   },
   "engines": {
     "node": "8.x"

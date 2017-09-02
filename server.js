@@ -12,6 +12,8 @@ var bodyParser = require('body-parser')
 
 var Unsplash = require('unsplash-js').default;
 var toJson = require('unsplash-js').toJson
+var multer  = require('multer')
+var upload = multer({ dest: 'uploads/' })
 
 const unsplash = new Unsplash({
   applicationId: "852842363511fc7d26839c600217bc1ca18cd2fa30af382631414c56ade47abb",
@@ -144,7 +146,18 @@ MongoClient.connect(url, function(err, db) {
 //   end of database connection
 })
 
-
+app.get('/filesize',(req,res)=>{
+  log('filesize api get')
+  res.sendFile(__dirname+'/views/filesize.html')
+})
+app.post('/filesize', upload.single('avatar'), function (req, res, next) {
+  log('file Uploaded')
+  log(req.body)
+  log(req.file)
+  res.json({size:req.file.size})
+  // req.file is the `avatar` file 
+  // req.body will hold the text fields, if there were any 
+}) 
 
  
  
